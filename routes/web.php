@@ -31,3 +31,6 @@ $router->get("/master", "MasterController@getMaster");
 //transaction
 $router->post("/save", "TransactionController@save");
 $router->post("/order", "TransactionController@getUpdateOrder");
+
+$router->post("/updateorderuser", "TransactionController@postUpdateOrder");
+$router->post("/updateorderfailed", "TransactionController@postUpdateOrderFailed");

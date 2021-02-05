@@ -32,10 +32,10 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $this->validate($request, [
-            'username' => 'required',
-            'password' => 'required|min:6'
-        ]);
+        // $this->validate($request, [
+        //     'username' => 'required',
+        //     'password' => 'required|min:6'
+        // ]);
  
         $username = $request->input("username");
         $password = $request->input("password");
@@ -44,12 +44,12 @@ class AuthController extends Controller
  
         if (!$user) {
             $out = [
-                "message" => "login_failed",
+                "message" => "data not found",
                 "results"  => [
                     "token" => null,
                 ]
             ];
-            return response()->json($out, 500);
+            return response()->json($out, 200);
         }
  
         if (Hash::check($password, $user->password)) {
@@ -70,7 +70,7 @@ class AuthController extends Controller
             return response()->json($out, 200);
         } else {
             $out = [
-                "message" => "login_failed",
+                "message" => "Kombinasi Username dan Password salah!",
                 "results"  => [
                     "token" => null,
                 ]
@@ -83,11 +83,6 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $this->validate($request, [
-            'username' => 'required',
-            'email' => 'required|unique:users|max:255',
-            'password' => 'required|min:6'
-        ]);
  
         $username = $request->input("username");
         $email = $request->input("email");
@@ -100,22 +95,59 @@ class AuthController extends Controller
             "email" => $email,
             "password" => $hashPwd
         ];
+
+        if($username == "" && $email == "" && $password == ""){
+            $out = [
+                "code" => 200,
+                "message" => "Data tidak komplit!",
+                "results"  => null
+            ];
+            return response()->json($out, $out["code"]);
+        }
  
+        $code = 404;
+
+        $user = User::where("username", $username)->first();
+
+        if ($user) {
+            $out = [
+                "code" => 200,
+                "message" => "Username sudah dipakai!",
+                "results"  => null
+            ];
+            return response()->json($out, $out["code"]);
+        }
+
+        $user2 = User::where("email", $email)->first();
  
+        if ($user2) {
+            $out = [
+                "code" => 200,
+                "message" => "Email sudah dipakai!",
+                "results"  => null
+            ];
+            return response()->json($out, $out["code"]);
+        }
  
         if (User::create($data)) {
             $out = [
-                "message" => "register_success",
-                "code"    => 201,
+                "code" => 201,
+                "message" => "Register succesfuly!",
+                "results"  => null
             ];
+
+            return response()->json($out, $out["code"]);
+
         } else {
             $out = [
-                "message" => "vailed_regiser",
-                "code"   => 404,
+                "code" => 200,
+                "message" => "Register failed!",
+                "results"  => null
             ];
+            return response()->json($out, $out["code"]);
         }
  
-        return response()->json($out, $out['code']);
+        return response()->json($out, $code);
     }
  
     public function login2(Request $request)

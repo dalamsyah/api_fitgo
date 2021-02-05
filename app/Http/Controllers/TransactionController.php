@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Booking;
 use Illuminate\Http\Request;
 
+use DB;
+
 class TransactionController extends Controller
 {
     /**
@@ -44,12 +46,13 @@ class TransactionController extends Controller
             $data = [
                 "order_id" => $order['order_id'],
                 "kode_lapangan" => $order['kode_lapangan'],
+                "kode_sublapangan" => $order['kode_sublapangan'],
                 "jam" => $order['jam'],
                 "tanggal" => $order['tanggal'],
                 "harga" => $order['harga'],
                 "tipe_pembayaran" => $order['tipe_pembayaran'],
                 "pay" => $order['pay'],
-                "email" => $order['order_id'],
+                "email" => $order['email'],
                 "status" => $order['status']
             ];
 
@@ -70,39 +73,42 @@ class TransactionController extends Controller
         return response()->json($out, 200);
     }
 
-    public function save2(Request $request){
+    public function postUpdateOrder(Request $request){
 
-        $data = [
-            "email" => $request->input("email"),
-            "booking" => $request->input("booking"),
-            "tipe_pembayaran" => $request->input("tipe_pembayaran"),
-            "nominal" => $request->input("nominal"),
-            "status" => $request->input("status")
+        $row = DB::table('bookings')
+              ->where('pay', $request->input('nominal') )
+              ->update(['status' => 'SUCCESS']);
+
+        $data = Booking::where("pay", $request->input('nominal'))->get();
+
+        $out = [
+            "message" => "update transaction succesfuly ",
+            "results"  => [
+                "orders" => $data,
+            ]
         ];
 
-        if (Booking::create($data)) {
-            $out = [
-                "message" => "save transaction success",
-                "results"  => [
-                    "bookings" => $data,
-                ]
-            ];
+        return response()->json($out, 200);
 
+    }
 
-            return response()->json($out, 200);
-        }else{
+    public function postUpdateOrderFailed(Request $request){
 
-            $out = [
-                "message" => "save transaction failed",
-                "results"  => [
-                    "bookings" => null,
-                ]
-            ];
+        $row = DB::table('bookings')
+              ->where('order_id', $request->input('order_id') )
+              ->update(['status' => 'FAILED']);
 
-            return response()->json($out, 500);
-        }
+        $data = Booking::where("order_id", $request->input('order_id'))->get();
 
-    
+        $out = [
+            "message" => "update transaction succesfuly ",
+            "results"  => [
+                "orders" => $data,
+            ]
+        ];
+
+        return response()->json($out, 200);
+
     }
 
     //

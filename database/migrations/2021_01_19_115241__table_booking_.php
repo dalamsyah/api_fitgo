@@ -17,6 +17,7 @@ class TableBooking extends Migration
             $table->bigIncrements('id');
             $table->string("order_id");
             $table->string("kode_lapangan");
+            $table->string("kode_sublapangan");
             $table->string("jam");
             $table->string("tanggal");
             $table->string("harga");
