@@ -111,5 +111,24 @@ class TransactionController extends Controller
 
     }
 
+    public function postUpdateOrderWithStatus(Request $request){
+
+        $row = DB::table('bookings')
+              ->where('order_id', $request->input('order_id') )
+              ->update(['status' => $request->input('status')] );
+
+        $data = Booking::where("order_id", $request->input('order_id'))->get();
+
+        $out = [
+            "message" => "update transaction succesfuly ",
+            "results"  => [
+                "orders" => $data,
+            ]
+        ];
+
+        return response()->json($out, 200);
+
+    }
+
     //
 }

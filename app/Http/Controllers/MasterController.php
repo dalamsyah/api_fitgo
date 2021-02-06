@@ -50,11 +50,22 @@ class MasterController extends Controller
             return response()->json($out, 200);
 
         }else if($request->input("q") == "orders"){
+
+            /*
+            DB::table('bookings')
+                                        ->join('lapangans', 'bookings.kode_lapangan', '=', 'lapangans.kode_lapangan')
+                                        ->select('bookings.*', 'lapangans.nama_lapangan', DB::raw('CONCAT(lapangans.nama_tempat," ", lapangans.lokasi) as alamat') )
+                                        ->get(),
+            */
+
             $out = [
                 "message" => "get ".$request->input("q")." success",
                 "results"  => [
                     "orders" => DB::table('bookings')
-                                        ->join('lapangans', 'bookings.kode_lapangan', '=', 'lapangans.kode_lapangan')
+                                        ->join('lapangans', function ($join) {
+                                            $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                                            $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
+                                        })
                                         ->select('bookings.*', 'lapangans.nama_lapangan', DB::raw('CONCAT(lapangans.nama_tempat," ", lapangans.lokasi) as alamat') )
                                         ->get(),
                 ]
