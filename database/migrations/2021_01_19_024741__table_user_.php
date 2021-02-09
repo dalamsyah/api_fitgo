@@ -17,8 +17,8 @@ class TableUser extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string("email")->unique();
-            $table->string("username");
+            $table->string("email", 100);
+            $table->string("username", 100);
             $table->string("password");
             $table->string("token")->nullable();
             $table->timestamps();
