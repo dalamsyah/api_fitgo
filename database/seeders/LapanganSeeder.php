@@ -50,8 +50,8 @@ class LapanganSeeder extends Seeder
                 'longitude' => 106.935557,
             ],
             [
-                'kode_lapangan' => 'jAV',
-                'kode_sublapangan' => 'jAV1',
+                'kode_lapangan' => 'JAV',
+                'kode_sublapangan' => 'JAV1',
                 'nama_lapangan' => 'Lapangan 1',
                 'nama_tempat' => 'Java',
                 'keterangan' => 'dengan rumput sintetis',
@@ -61,8 +61,8 @@ class LapanganSeeder extends Seeder
                 'longitude' => 106.935557,
             ],
             [
-                'kode_lapangan' => 'jAV',
-                'kode_sublapangan' => 'jAV2',
+                'kode_lapangan' => 'JAV',
+                'kode_sublapangan' => 'JAV2',
                 'nama_lapangan' => 'Lapangan 2',
                 'nama_tempat' => 'Java',
                 'keterangan' => 'dengan rumput sintetis',
@@ -72,8 +72,8 @@ class LapanganSeeder extends Seeder
                 'longitude' => 106.935557,
             ],
             [
-                'kode_lapangan' => 'jAV',
-                'kode_sublapangan' => 'jAV3',
+                'kode_lapangan' => 'JAV',
+                'kode_sublapangan' => 'JAV3',
                 'nama_lapangan' => 'Lapangan 3',
                 'nama_tempat' => 'Java',
                 'keterangan' => 'dengan rumput sintetis',

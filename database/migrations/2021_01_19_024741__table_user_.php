@@ -8,7 +8,9 @@ class TableUser extends Migration
 {
     /**
      * Run the migrations.
-     *
+     * php artisan make:migration create_pages_table — create=pages
+     * php artisan make:migration tabel_mahasiswa --create=mahasiswa
+     * php artisan make:migration ini_table_post --create=posts
      * @return void
      */
     public function up()

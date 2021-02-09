@@ -27,6 +27,7 @@ $router->get("/users", "AuthController@index");
 
 //master
 $router->get("/master", "MasterController@getMaster");
+$router->get("/tes", "MasterController@tes");
 
 //transaction
 $router->post("/save", "TransactionController@save");
