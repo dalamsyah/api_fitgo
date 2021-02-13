@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use App\Booking;
+
+use DB;
 
 class AuthController extends Controller
 {
@@ -62,7 +65,17 @@ class AuthController extends Controller
             $out = [
                 "message" => "login_success",
                 "results"  => [
-                    "user" => $user
+                    "user" => $user,
+                    "orders" => DB::table('bookings')
+                                ->join('lapangans', function ($join) {
+                                    $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                                    $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
+                                })
+                                ->select('bookings.*',
+                                         DB::raw('CONCAT(lapangans.nama_lapangan,", ",lapangans.nama_tempat) as nama_lapangan'), 
+                                         DB::raw('CONCAT(lapangans.nama_tempat," ",lapangans.lokasi) as alamat') )
+                                ->where('email', $user->email)
+                                ->get(),
                 ]
             ];
 

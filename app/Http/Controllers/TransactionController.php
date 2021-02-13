@@ -26,7 +26,7 @@ class TransactionController extends Controller
         $out = [
                 "message" => "get update order",
                 "results"  => [
-                    "orders" => $data,
+                    "ordersTemp" => $data,
                 ]
             ];
 
@@ -40,6 +40,8 @@ class TransactionController extends Controller
         $orders = json_decode($request->getContent(), true);
         $callback = array();
 
+        $date = new \DateTime();
+
         for($i = 0; $i < count($orders); $i++){
             $order = $orders[$i];
 
@@ -49,25 +51,66 @@ class TransactionController extends Controller
                 "kode_sublapangan" => $order['kode_sublapangan'],
                 "jam" => $order['jam'],
                 "tanggal" => $order['tanggal'],
-                "harga" => $order['harga'],
+                "harga" => $order['price'],
                 "tipe_pembayaran" => $order['tipe_pembayaran'],
                 "pay" => $order['pay'],
+                "dp" => $order['dp'],
                 "email" => $order['email'],
-                "status" => $order['status']
+                "status" => $order['status'],
+                "created_at" => $date,
+                "updated_at" => $date,
             ];
 
-            Booking::create($data);
+            $pending = DB::table('bookings')
+              ->where('kode_lapangan', $data['kode_lapangan'] )
+              ->where('kode_sublapangan', $data['kode_sublapangan'] )
+              ->where('jam', $data['jam'] )
+              ->where('tanggal', $data['tanggal'] )
+              ->where('status', '=', 'PENDING')
+              ->first();
+
+            if($pending !== null){
+
+                $out = [
+                    "code" => 200,
+                    "message" => "Maaf, Transaksi ini sedang diproses, Mohon tunggu atau pilih transaksi yang lain! ",
+                    "results"  => null
+                ];
+
+                return response()->json($out, $out["code"]);
+
+            }
+
+            $success = DB::table('bookings')
+              ->where('kode_lapangan', $data['kode_lapangan'] )
+              ->where('kode_sublapangan', $data['kode_sublapangan'] )
+              ->where('jam', $data['jam'] )
+              ->where('tanggal', $data['tanggal'] )
+              ->where('status', '=', 'SUCCESS')
+              ->first();
+
+            if($success !== null){
+
+                $out = [
+                    "code" => 200,
+                    "message" => "Maaf, Transaksi ini sudah ada yg booking! ",
+                    "results"  => null
+                ];
+
+                return response()->json($out, $out["code"]);
+
+            }
 
             array_push($callback, $data);
 
         }
-        
 
+        Booking::insert($callback);
+        
         $out = [
-                "message" => "post transaction ",
-                "results"  => [
-                    "orders" => $callback,
-                ]
+                "code" => 201,
+                "message" => "post transaction succesfuly",
+                "results"  => null
             ];
 
         return response()->json($out, 200);
@@ -84,7 +127,7 @@ class TransactionController extends Controller
         $out = [
             "message" => "update transaction succesfuly ",
             "results"  => [
-                "orders" => $data,
+                "ordersTemp" => $data,
             ]
         ];
 
@@ -103,7 +146,7 @@ class TransactionController extends Controller
         $out = [
             "message" => "update transaction succesfuly ",
             "results"  => [
-                "orders" => $data,
+                "ordersTemp" => $data,
             ]
         ];
 
@@ -122,7 +165,7 @@ class TransactionController extends Controller
         $out = [
             "message" => "update transaction succesfuly ",
             "results"  => [
-                "orders" => $data,
+                "ordersTemp" => $data,
             ]
         ];
 

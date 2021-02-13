@@ -15,17 +15,26 @@ class TableBooking extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string("order_id");
-            $table->string("kode_lapangan");
-            $table->string("kode_sublapangan");
-            $table->string("jam");
-            $table->string("tanggal");
-            $table->string("harga");
-            $table->string("tipe_pembayaran");
-            $table->string("pay");
-            $table->string("email");
-            $table->string("status");
+            $table->string("order_id", 100);
+            $table->string("kode_lapangan", 30);
+            $table->string("kode_sublapangan", 30);
+            $table->string("jam", 30);
+            $table->string("tanggal", 20);
+            $table->integer("harga");
+            $table->string("tipe_pembayaran", 10);
+            $table->integer("pay");
+            $table->integer("dp");
+            $table->string("email", 100);
+            $table->string("status", 30);
             $table->timestamps();
+
+            // $table->unsignedInteger('kode_lapangan');
+
+
+            // $table->primary(['kode_lapangan', 'kode_sublapangan', 'tanggal', 'jam']);
+
+
+            // $table->unique(array( 'kode_sublapangan', 'tanggal', 'jam', 'status'));
         });
     }
 
