@@ -9,6 +9,9 @@ use App\Booking;
 
 use DB;
 
+use App\Mail\VerifikasiEmail;
+use Illuminate\Support\Facades\Mail;
+
 class AuthController extends Controller
 {
     /**
@@ -102,6 +105,7 @@ class AuthController extends Controller
         $password = $request->input("password");
  
         $hashPwd = Hash::make($password);
+        $hashUsername = Hash::make($username);
  
         $data = [
             "username" => $username,
@@ -143,9 +147,17 @@ class AuthController extends Controller
         }
  
         if (User::create($data)) {
+
+            $crypted = base64_encode($username);
+
+            $data['link'] = $crypted;
+            $email = Mail::to($email)->send(new VerifikasiEmail($data));
+
             $out = [
                 "code" => 201,
                 "message" => "Register succesfuly!",
+                "email" => $email,
+                "link" => $crypted,
                 "results"  => null
             ];
 
@@ -215,7 +227,7 @@ class AuthController extends Controller
  
     function generateRandomString($length = 80)
     {
-        $karakkter = '012345678dssd9abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $karakkter = '012345678dssd9abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()';
         $panjang_karakter = strlen($karakkter);
         $str = '';
         for ($i = 0; $i < $length; $i++) {

@@ -127,7 +127,7 @@ class TransactionController extends Controller
         $out = [
             "message" => "update transaction succesfuly ",
             "results"  => [
-                "ordersTemp" => $data,
+                "orders" => $data,
             ]
         ];
 
@@ -171,6 +171,27 @@ class TransactionController extends Controller
 
         return response()->json($out, 200);
 
+    }
+
+    public function getOrders(Request $request){
+
+        $out = [
+            "message" => "get orders success",
+            "results"  => [
+                "orders" => DB::table('bookings')
+                            ->join('lapangans', function ($join) {
+                                $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                                $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
+                            })
+                            ->select('bookings.*',
+                                     DB::raw('CONCAT(lapangans.nama_lapangan,", ",lapangans.nama_tempat) as nama_lapangan'), 
+                                     DB::raw('CONCAT(lapangans.nama_tempat," ",lapangans.lokasi) as alamat') )
+                            ->get(),
+            ]
+        ];
+
+
+        return response()->json($out, 200);
     }
 
     //

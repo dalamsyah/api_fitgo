@@ -21,6 +21,7 @@ class TableUser extends Migration
             $table->string("username", 100);
             $table->string("password");
             $table->string("token")->nullable();
+            $table->string("verifikasi", 10)->default('false');
             $table->timestamps();
         });
     }

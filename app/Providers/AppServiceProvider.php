@@ -17,12 +17,18 @@ class AppServiceProvider extends ServiceProvider
     {
         
         Schema::defaultStringLength(191);
-    }
 
-    public function boot()
-	{
-	    // Builder::defaultStringLength(191);
-	     Schema::defaultStringLength(191);
-	}
+        $this->app->singleton(
+            'mailer',
+            function ($app) {
+                return $app->loadComponent('mail', 'Illuminate\Mail\MailServiceProvider', 'mailer');
+            }
+        );
+        // Aliases
+        $this->app->alias('mailer', \Illuminate\Contracts\Mail\Mailer::class);
+        // Make Queue
+        $this->app->make('queue');
+        
+    }
 
 }

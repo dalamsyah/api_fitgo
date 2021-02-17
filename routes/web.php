@@ -32,7 +32,23 @@ $router->get("/tes", "MasterController@tes");
 //transaction
 $router->post("/save", "TransactionController@save");
 $router->post("/order", "TransactionController@getUpdateOrder");
+$router->get("/orders", "TransactionController@getOrders");
 
 $router->post("/updateorderuser", "TransactionController@postUpdateOrder");
 $router->post("/updateorderfailed", "TransactionController@postUpdateOrderFailed");
 $router->post("/updatestatus", "TransactionController@postUpdateOrderWithStatus");
+
+//pdf
+$router->get("/cetak", "PDFController@cetak");
+$router->get("/sendemail", "EmailController@sendemail");
+
+//email
+$router->get("/email", "EmailController@view");
+$router->get("/sendverifikasi", "EmailController@sendverifikasi");
+
+//verifikasi
+$router->get("/verifikasi", "VerifikasiController@verifikasi");
+
+
+
+
