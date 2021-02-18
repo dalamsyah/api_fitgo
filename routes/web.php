@@ -48,6 +48,10 @@ $router->get("/sendverifikasi", "EmailController@sendverifikasi");
 
 //verifikasi
 $router->get("/verifikasi", "VerifikasiController@verifikasi");
+$router->get("/success", function(){
+	return view('successverifikasi');
+	// return View::make("successverifikasi");
+});
 
 
 

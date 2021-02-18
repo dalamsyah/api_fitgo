@@ -25,7 +25,7 @@
 
 		<p>Silahkan klik link berikut untuk melakukan verifikasi data</p>
 
-		<p><center><a href="<?php echo url('/verifikasi/?q='.$link); ?>"><?php echo url('/verifikasi/?q='.$link); ?></a></center></p>
+		<p><center><a href="<?php echo 'https://verifikasi.dalamsyah.com/?q='.$link; ?>"><?php echo 'https://verifikasi.dalamsyah.com/?q='.$link; ?></a></center></p>
 
 	</div>
 

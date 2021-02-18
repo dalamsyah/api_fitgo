@@ -29,6 +29,7 @@ class VerifikasiController extends Controller
     public function verifikasi(Request $request){
 
         $decrypted = base64_decode($request->input("q"));
+        // var_dump($decrypted); exit;
 
         $cek = User::where("username", $decrypted)
             ->where("verifikasi", "false")
@@ -50,7 +51,10 @@ class VerifikasiController extends Controller
             "varifikasi" => $cek
         ];
 
-        return response()->json($out, $out['code']);
+        return redirect()->to('https://fitgo.dalamsyah.com/successverifikasi.php');
+
+
+        // return response()->json($out, $out['code']);
 
     }
 
