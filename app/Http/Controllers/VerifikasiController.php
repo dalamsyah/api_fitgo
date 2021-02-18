@@ -42,7 +42,8 @@ class VerifikasiController extends Controller
                 "varifikasi" => $cek
             ];
 
-            return response()->json($out, $out['code']);
+            return redirect()->to('https://fitgo.dalamsyah.com/sudahverifikasi.php');
+            // return response()->json($out, $out['code']);
         }
 
         $out = [
