@@ -16,6 +16,7 @@ class TableBooking extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string("order_id", 100);
+            $table->integer("team_id");
             $table->string("kode_lapangan", 30);
             $table->string("kode_sublapangan", 30);
             $table->string("jam", 30);

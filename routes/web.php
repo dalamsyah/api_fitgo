@@ -25,6 +25,10 @@ $router->post("/register", "AuthController@register");
 $router->post("/login", "AuthController@login");
 $router->get("/users", "AuthController@index");
 
+//team
+$router->post("/team", "TeamController@save");
+$router->delete("/team/{id}", "TeamController@delete");
+
 //master
 $router->get("/master", "MasterController@getMaster");
 $router->get("/tes", "MasterController@tes");
@@ -54,5 +58,7 @@ $router->get("/success", function(){
 });
 
 
+//upload image
+$router->post("/upload", "UploadController@upload");
 
 

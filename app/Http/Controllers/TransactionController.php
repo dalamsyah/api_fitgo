@@ -47,6 +47,7 @@ class TransactionController extends Controller
 
             $data = [
                 "order_id" => $order['order_id'],
+                "team_id" => $order['team_id'],
                 "kode_lapangan" => $order['kode_lapangan'],
                 "kode_sublapangan" => $order['kode_sublapangan'],
                 "jam" => $order['jam'],

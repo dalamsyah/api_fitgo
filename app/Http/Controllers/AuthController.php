@@ -74,9 +74,16 @@ class AuthController extends Controller
                                     $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
                                     $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
                                 })
-                                ->select('bookings.*',
+                                ->join('teams', function ($join) {
+                                    $join->on('bookings.team_id', '=', 'teams.id');
+                                })
+                                ->select('bookings.*', 'teams.nama_team',
                                          DB::raw('CONCAT(lapangans.nama_lapangan,", ",lapangans.nama_tempat) as nama_lapangan'), 
                                          DB::raw('CONCAT(lapangans.nama_tempat," ",lapangans.lokasi) as alamat') )
+                                ->where('bookings.email', $user->email)
+                                ->get(),
+                    "teams" => DB::table('teams')
+                                ->where('deleted', 'false')
                                 ->where('email', $user->email)
                                 ->get(),
                 ]

@@ -6,21 +6,19 @@
 </head>
 <body>
     
-    <div class="container" >
-    	
-    	<div class="d-flex justify-content-center">
-    		
-    		<h3 style="margin-top: 20px">Terimakasih, Verifikasi berhasil!</h3>
-
-    		
-
-    	</div>
+    <!-- <div class="container" style="height: 100px; background-color: #32aadf"  >
 
     	<div class="d-flex justify-content-center">
-    		<button class="btn btn-success" >Open Fitgo</button>
+    		<div class="align-items-center">
+    			<button class="btn btn-success" >Open Fitgo</button>
+    		</div>
     	</div>
 
-    </div>
+    </div> -->
+
+    <div class="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+		<button class="btn btn-success" >Open Fitgo</button>
+	</div>
     
 </body>
 </html>

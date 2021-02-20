@@ -227,8 +227,7 @@ class MasterController extends Controller
                     "prices" => DB::table('prices')
                                 ->whereDate('valid', '>', $valid)
                                 ->where('kode_lapangan', $request->input("kode_lapangan"))
-                                ->get(),
-                    "test" => DB::table('bookings')->get(),
+                                ->get()
                 ]
             ];
 
