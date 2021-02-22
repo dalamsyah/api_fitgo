@@ -46,7 +46,9 @@ class AuthController extends Controller
         $username = $request->input("username");
         $password = $request->input("password");
  
-        $user = User::where("username", $username)->first();
+        $user = User::where("username", $username)
+            ->orWhere('email', $username)
+            ->first();
  
         if (!$user) {
             $out = [
