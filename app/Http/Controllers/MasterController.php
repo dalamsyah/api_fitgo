@@ -121,7 +121,7 @@ class MasterController extends Controller
             $out = [
                 "message" => "get ".$request->input("q")." success",
                 "results"  => [
-                    "lapangans" => DB::table('lapangans')
+                    "lapangans_with_price" => DB::table('lapangans')
                                         ->select('*', 
 
                                             DB::raw("(SELECT IF(true IS NULL, 'false', 'true') FROM bookings where bookings.kode_lapangan = lapangans.kode_lapangan and bookings.kode_sublapangan = lapangans.kode_sublapangan and bookings.jam = $jam1 and bookings.tanggal = '$tgl' and bookings.status = 'SUCCESS' ) as jam1"),
@@ -224,10 +224,14 @@ class MasterController extends Controller
                                         )
                                         ->where('lapangans.kode_lapangan', '=', $request->input("kode_lapangan") )
                                         ->get(),
-                    "prices" => DB::table('prices')
-                                ->whereDate('valid', '>', $valid)
-                                ->where('kode_lapangan', $request->input("kode_lapangan"))
-                                ->get()
+                    "lapangans" => DB::table('lapangans')
+                                        ->select('*')
+                                        ->where('lapangans.kode_lapangan', '=', $request->input("kode_lapangan") )
+                                        ->get()
+                    // "prices" => DB::table('prices')
+                    //             ->whereDate('valid', '>', $valid)
+                    //             ->where('kode_lapangan', $request->input("kode_lapangan"))
+                    //             ->get()
                 ]
             ];
 
