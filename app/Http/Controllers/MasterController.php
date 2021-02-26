@@ -49,7 +49,14 @@ class MasterController extends Controller
             $out = [
                 "message" => "get ".$request->input("q")." success",
                 "results"  => [
-                    "lapangans" => Lapangan::all(),
+                    "lapangans" => DB::table('lapangans')
+                                        ->select('*',
+                                            DB::raw(' (SELECT MAX(price) as max_price FROM prices WHERE kode_lapangan = lapangans.kode_lapangan AND kode_sublapangan = lapangans.kode_sublapangan ) as max_price'),
+
+                                            DB::raw(' (SELECT MIN(price) as max_price FROM prices WHERE kode_lapangan = lapangans.kode_lapangan AND kode_sublapangan = lapangans.kode_sublapangan ) as min_price')
+                                        )
+                                        ->where('lapangans.kode_lapangan', '=', $request->input("kode_lapangan") )
+                                        ->get()
                 ]
             ];
 
@@ -58,13 +65,27 @@ class MasterController extends Controller
 
         }else if($request->input("q") == "distinctlapangan"){
 
+            $vinyl = "Vinyl";
+            $sintetis = "Sintetis";
+
             $out = [
                 "message" => "get ".$request->input("q")." success",
                 "results"  => [
                     "distinctlapangans" => DB::table('lapangans')
                                         ->distinct()
-                                        ->select('kode_lapangan', 'nama_tempat', 'gambar', 'lokasi')
+                                        ->join('prices', function ($join) {
+                                            $join->on('prices.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                                        })
+                                        ->select('lapangans.kode_lapangan', 'lapangans.nama_tempat', 'lapangans.lokasi', DB::raw('(SELECT gambar as gambar FROM lapangans lap where lap.kode_lapangan = lapangans.kode_lapangan limit 1) as gambar '), DB::raw('(SELECT COUNT(*) as vinyl FROM lapangans lap where lap.kode_lapangan = lapangans.kode_lapangan and lap.tipe = "'.$vinyl.'" ) as vinyl '), DB::raw('(SELECT COUNT(*) as sintetis FROM lapangans lap where lap.kode_lapangan = lapangans.kode_lapangan and lap.tipe = "'.$sintetis.'" ) as sintetis ')  )
+                                        ->groupBy('lapangans.kode_lapangan', 'lapangans.nama_tempat','lapangans.lokasi')
                                         ->get(),
+                "lapangans" => DB::table('lapangans')
+                                        ->select('*',
+                                            DB::raw(' (SELECT MAX(price) as max_price FROM prices WHERE kode_lapangan = lapangans.kode_lapangan AND kode_sublapangan = lapangans.kode_sublapangan ) as max_price'),
+
+                                            DB::raw(' (SELECT MIN(price) as max_price FROM prices WHERE kode_lapangan = lapangans.kode_lapangan AND kode_sublapangan = lapangans.kode_sublapangan ) as min_price')
+                                        )
+                                        ->get()
                 ]
             ];
 
@@ -223,11 +244,11 @@ class MasterController extends Controller
 
                                         )
                                         ->where('lapangans.kode_lapangan', '=', $request->input("kode_lapangan") )
-                                        ->get(),
-                    "lapangans" => DB::table('lapangans')
-                                        ->select('*')
-                                        ->where('lapangans.kode_lapangan', '=', $request->input("kode_lapangan") )
                                         ->get()
+                    // "lapangans" => DB::table('lapangans')
+                    //                     ->select('*')
+                    //                     ->where('lapangans.kode_lapangan', '=', $request->input("kode_lapangan") )
+                    //                     ->get()
                     // "prices" => DB::table('prices')
                     //             ->whereDate('valid', '>', $valid)
                     //             ->where('kode_lapangan', $request->input("kode_lapangan"))

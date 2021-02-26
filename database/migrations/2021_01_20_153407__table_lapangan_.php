@@ -19,6 +19,7 @@ class TableLapangan extends Migration
             $table->string("kode_sublapangan", 30);
             $table->string("nama_lapangan", 30);
             $table->string("nama_tempat", 30);
+            $table->string("tipe", 30);
             $table->string("keterangan", 100);
             $table->string("gambar", 30);
             $table->string("lokasi", 100);
