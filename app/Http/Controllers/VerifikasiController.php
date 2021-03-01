@@ -42,8 +42,11 @@ class VerifikasiController extends Controller
                 "varifikasi" => $cek
             ];
 
-            return redirect()->to('https://fitgo.dalamsyah.com/sudahverifikasi.php');
-            // return response()->json($out, $out['code']);
+            if ($request->isMethod('post')) {
+                return response()->json($out, $out['code']);
+            }else{
+                return redirect()->to('https://fitgo.dalamsyah.com/sudahverifikasi.php');
+            }
         }
 
         $out = [
@@ -52,7 +55,11 @@ class VerifikasiController extends Controller
             "varifikasi" => $cek
         ];
 
-        return redirect()->to('https://fitgo.dalamsyah.com/successverifikasi.php');
+        if ($request->isMethod('post')) {
+            return response()->json($out, $out['code']);
+        }else{
+            return redirect()->to('https://fitgo.dalamsyah.com/successverifikasi.php');
+        }
 
 
         // return response()->json($out, $out['code']);
