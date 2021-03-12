@@ -24,7 +24,7 @@ class UploadController extends Controller
 
         $file->move("images",$file->getClientOriginalName());
 
-        Log::debug($file);
+        // Log::debug($file);
 
         $out = [
             "code" => 200,

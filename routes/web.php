@@ -32,6 +32,7 @@ $router->delete("/team/{id}", "TeamController@delete");
 //master
 $router->get("/master", "MasterController@getMaster");
 $router->get("/tes", "MasterController@tes");
+$router->get("/notification", "MasterController@getNotifcation");
 
 //transaction
 $router->post("/save", "TransactionController@save");

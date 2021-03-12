@@ -6,6 +6,7 @@ use App\Lapangan;
 use App\Booking;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Log;
 
 use DB;
 
@@ -19,6 +20,51 @@ class MasterController extends Controller
     public function __construct()
     {
         //
+    }
+
+    public function getNotifcation(Request $request){
+
+        $orders = DB::table('bookings')
+                                        ->distinct()
+                                        ->join('lapangans', function ($join) {
+                                            $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                                            $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
+                                        })
+                                        ->join('teams', function ($join) {
+                                            $join->on('bookings.team_id', '=', 'teams.id');
+                                        })
+                                        ->select('bookings.*', 'lapangans.nama_lapangan', 'teams.nama_team')
+                                        ->where('bookings.status', '=', 'SUCCESS' )
+                                        ->where('lapangans.owner_email', '=', $request->input("owner_email") )
+                                        ->where('bookings.id', '>', $request->input("lastIdNotification") )
+                                        ->get();
+
+        $id = count($orders);
+        $team = "";
+        $jam = "";
+        $nama_lapangan = "";
+
+        if(count($orders) > 0){
+            $arr = $id - 1;
+            $id = $orders[$arr]->id;
+            $team = $orders[$arr]->nama_team;
+            $nama_lapangan = $orders[$arr]->nama_lapangan;
+            $jam = $orders[$arr]->jam;
+        }
+
+        $out = [
+            "message" => "get notification",
+            "results"  => [
+                "notifications" => [
+                    "id" => $id,
+                    "title" => "BOOKING",
+                    "desc" => $team." ".$jam." ".$nama_lapangan,
+                    "orders" => $orders,
+                ]
+            ]
+        ]; 
+
+        return response()->json($out, 200);
     }
 
     public function tes(){
@@ -44,7 +90,34 @@ class MasterController extends Controller
 
     public function getMaster(Request $request){
 
-        if($request->input("q") == "lapangan"){
+        if($request->input("q") == "notification"){
+
+            Log::debug($request);
+
+            $out = [
+                "message" => "get ".$request->input("q")." success",
+                "results"  => [
+                    "notifications" => DB::table('bookings')
+                                        ->distinct()
+                                        ->join('lapangans', function ($join) {
+                                            $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                                            $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
+                                        })
+                                        ->join('teams', function ($join) {
+                                            $join->on('bookings.team_id', '=', 'teams.id');
+                                        })
+                                        ->select('bookings.*', 'lapangans.nama_lapangan', 'teams.nama_team')
+                                        ->where('bookings.status', '=', 'SUCCESS' )
+                                        ->where('lapangans.owner_email', '=', $request->input("user_email") )
+                                        // ->where('bookings.id', '>', $request->input("lastIdNotification") )
+                                        ->get()
+                ]
+            ];
+
+
+            return response()->json($out, 200);
+
+        }else if($request->input("q") == "lapangan"){
 
             $out = [
                 "message" => "get ".$request->input("q")." success",
@@ -68,17 +141,47 @@ class MasterController extends Controller
             $vinyl = "Vinyl";
             $sintetis = "Sintetis";
 
+            //for user only
+            if( $request->input("user_type") == 1){
+
+                $distinctlapangans = DB::table('lapangans')
+                    ->distinct()
+                    ->join('prices', function ($join) {
+                        $join->on('prices.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                    })
+                    ->select('lapangans.kode_lapangan', 'lapangans.nama_tempat', 'lapangans.lokasi', DB::raw('(SELECT gambar as gambar FROM lapangans lap where lap.kode_lapangan = lapangans.kode_lapangan limit 1) as gambar '), DB::raw('(SELECT COUNT(*) as vinyl FROM lapangans lap where lap.kode_lapangan = lapangans.kode_lapangan and lap.tipe = "'.$vinyl.'" ) as vinyl '), DB::raw('(SELECT COUNT(*) as sintetis FROM lapangans lap where lap.kode_lapangan = lapangans.kode_lapangan and lap.tipe = "'.$sintetis.'" ) as sintetis ')  )
+                    ->groupBy('lapangans.kode_lapangan', 'lapangans.nama_tempat','lapangans.lokasi')
+                    ->get();
+
+            //for admin only
+            }else if( $request->input("user_type") == 2 ){
+
+                $distinctlapangans = DB::table('lapangans')
+                    ->distinct()
+                    ->join('prices', function ($join) {
+                        $join->on('prices.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                    })
+                    ->select('lapangans.kode_lapangan', 'lapangans.nama_tempat', 'lapangans.lokasi', DB::raw('(SELECT gambar as gambar FROM lapangans lap where lap.kode_lapangan = lapangans.kode_lapangan limit 1) as gambar '), DB::raw('(SELECT COUNT(*) as vinyl FROM lapangans lap where lap.kode_lapangan = lapangans.kode_lapangan and lap.tipe = "'.$vinyl.'" ) as vinyl '), DB::raw('(SELECT COUNT(*) as sintetis FROM lapangans lap where lap.kode_lapangan = lapangans.kode_lapangan and lap.tipe = "'.$sintetis.'" ) as sintetis ')  )
+                    ->where('lapangans.owner_email', '=', $request->input("user_email"))
+                    ->groupBy('lapangans.kode_lapangan', 'lapangans.nama_tempat','lapangans.lokasi')
+                    ->get();
+
+            //other case
+            }else{
+                $distinctlapangans = DB::table('lapangans')
+                    ->distinct()
+                    ->join('prices', function ($join) {
+                        $join->on('prices.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                    })
+                    ->select('lapangans.kode_lapangan', 'lapangans.nama_tempat', 'lapangans.lokasi', DB::raw('(SELECT gambar as gambar FROM lapangans lap where lap.kode_lapangan = lapangans.kode_lapangan limit 1) as gambar '), DB::raw('(SELECT COUNT(*) as vinyl FROM lapangans lap where lap.kode_lapangan = lapangans.kode_lapangan and lap.tipe = "'.$vinyl.'" ) as vinyl '), DB::raw('(SELECT COUNT(*) as sintetis FROM lapangans lap where lap.kode_lapangan = lapangans.kode_lapangan and lap.tipe = "'.$sintetis.'" ) as sintetis ')  )
+                    ->groupBy('lapangans.kode_lapangan', 'lapangans.nama_tempat','lapangans.lokasi')
+                    ->get();
+            }
+
             $out = [
                 "message" => "get ".$request->input("q")." success",
                 "results"  => [
-                    "distinctlapangans" => DB::table('lapangans')
-                                        ->distinct()
-                                        ->join('prices', function ($join) {
-                                            $join->on('prices.kode_lapangan', '=', 'lapangans.kode_lapangan');
-                                        })
-                                        ->select('lapangans.kode_lapangan', 'lapangans.nama_tempat', 'lapangans.lokasi', DB::raw('(SELECT gambar as gambar FROM lapangans lap where lap.kode_lapangan = lapangans.kode_lapangan limit 1) as gambar '), DB::raw('(SELECT COUNT(*) as vinyl FROM lapangans lap where lap.kode_lapangan = lapangans.kode_lapangan and lap.tipe = "'.$vinyl.'" ) as vinyl '), DB::raw('(SELECT COUNT(*) as sintetis FROM lapangans lap where lap.kode_lapangan = lapangans.kode_lapangan and lap.tipe = "'.$sintetis.'" ) as sintetis ')  )
-                                        ->groupBy('lapangans.kode_lapangan', 'lapangans.nama_tempat','lapangans.lokasi')
-                                        ->get(),
+                    "distinctlapangans" => $distinctlapangans,
                 "lapangans" => DB::table('lapangans')
                                         ->select('*',
                                             DB::raw(' (SELECT MAX(price) as max_price FROM prices WHERE kode_lapangan = lapangans.kode_lapangan AND kode_sublapangan = lapangans.kode_sublapangan ) as max_price'),

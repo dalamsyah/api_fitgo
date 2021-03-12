@@ -7,7 +7,7 @@ class Lapangan extends Model
 {
  
     protected $fillable = [
-        'kode_lapangan', 'kode_sublapangan', 'nama_lapangan', 'nama_tempat', 'tipe', 'keterangan', 'gambar', 'lokasi', 'longitude', 'latitude' 
+        'owner_email', 'kode_lapangan', 'kode_sublapangan', 'nama_lapangan', 'nama_tempat', 'tipe', 'keterangan', 'gambar', 'lokasi', 'longitude', 'latitude' 
     ];
  
 }

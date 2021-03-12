@@ -15,6 +15,7 @@ class TableLapangan extends Migration
     {
         Schema::create('lapangans', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string("owner_email", 50);
             $table->string("kode_lapangan", 30);
             $table->string("kode_sublapangan", 30);
             $table->string("nama_lapangan", 30);
