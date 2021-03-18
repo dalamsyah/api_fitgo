@@ -66,12 +66,44 @@ class AuthController extends Controller
             $user->update([
                 'token' => $newtoken
             ]);
+
+            if($user->type > 1){
+                $notif = DB::table('bookings')
+                                ->distinct()
+                                ->join('lapangans', function ($join) {
+                                    $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                                    $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
+                                })
+                                ->join('teams', function ($join) {
+                                    $join->on('bookings.team_id', '=', 'teams.id');
+                                })
+                                ->select('bookings.*', 'lapangans.nama_lapangan', 'teams.nama_team')
+                                ->where('bookings.status', '=', 'SUCCESS' )
+                                ->where('lapangans.owner_email', '=', $user->email )
+                                ->where('bookings.id', '>', 0 )
+                                ->get();
+            }else{
+                $notif = DB::table('bookings')
+                                ->join('lapangans', function ($join) {
+                                    $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                                    $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
+                                })
+                                ->join('teams', function ($join) {
+                                    $join->on('bookings.team_id', '=', 'teams.id');
+                                })
+                                ->select('bookings.*', 'teams.nama_team', 'lapangans.nama_lapangan',
+                                         // DB::raw('CONCAT(lapangans.nama_lapangan,", ",lapangans.nama_tempat) as nama_lapangan'), 
+                                         DB::raw('CONCAT(lapangans.nama_tempat,", ",lapangans.lokasi) as alamat') )
+                                ->where('bookings.email', $user->email)
+                                ->get();
+            }
  
             $out = [
                 "message" => "login_success",
                 "results"  => [
                     "user" => $user,
-                    "orders" => DB::table('bookings')
+
+                    "notifications" => DB::table('bookings')
                                 ->join('lapangans', function ($join) {
                                     $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
                                     $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
@@ -84,6 +116,9 @@ class AuthController extends Controller
                                          DB::raw('CONCAT(lapangans.nama_tempat,", ",lapangans.lokasi) as alamat') )
                                 ->where('bookings.email', $user->email)
                                 ->get(),
+
+                    "notifications" => $notif,
+
                     "teams" => DB::table('teams')
                                 ->where('deleted', 'false')
                                 ->where('email', $user->email)

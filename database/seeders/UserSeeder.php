@@ -22,21 +22,24 @@ class UserSeeder extends Seeder
     			"username" => "admin",
     			"password" => Hash::make("123456"),
     			"token" => "",
-                "type" => 2
+                "type" => 2,
+                "verifikasi" => "true"
     		],
     		[
     			"email" => "dani@gmail.com",
     			"username" => "dani",
     			"password" => Hash::make("123456"),
     			"token" => "",
-                "type" => 1
+                "type" => 1,
+                "verifikasi" => "true"
     		],
     		[
     			"email" => "apit@gmail.com",
     			"username" => "apit",
     			"password" => Hash::make("123456"),
     			"token" => "",
-                "type" => 1
+                "type" => 1,
+                "verifikasi" => "true"
     		]
     	];
 

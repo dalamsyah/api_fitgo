@@ -6,6 +6,7 @@ use App\Booking;
 use Illuminate\Http\Request;
 
 use DB;
+use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
@@ -27,6 +28,19 @@ class TransactionController extends Controller
                 "message" => "get update order",
                 "results"  => [
                     "ordersTemp" => $data,
+                    "notifications" => DB::table('bookings')
+                                            ->distinct()
+                                            ->join('lapangans', function ($join) {
+                                                $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                                                $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
+                                            })
+                                            ->join('teams', function ($join) {
+                                                $join->on('bookings.team_id', '=', 'teams.id');
+                                            })
+                                            ->select('bookings.*', 'lapangans.nama_lapangan', 'lapangans.nama_tempat', 'teams.nama_team')
+                                            ->where('bookings.status', '=', 'SUCCESS' )
+                                            ->where('bookings.order_id', '=', $request->input("order_id") )
+                                            ->get()
                 ]
             ];
 
@@ -40,7 +54,8 @@ class TransactionController extends Controller
         $orders = json_decode($request->getContent(), true);
         $callback = array();
 
-        $date = new \DateTime();
+        $mytime = Carbon::now();
+        $date = $mytime->toDateTimeString();
 
         for($i = 0; $i < count($orders); $i++){
             $order = $orders[$i];
@@ -123,12 +138,26 @@ class TransactionController extends Controller
               ->where('pay', $request->input('nominal') )
               ->update(['status' => 'SUCCESS']);
 
-        $data = Booking::where("pay", $request->input('nominal'))->get();
+        // $data = Booking::where("pay", $request->input('nominal'))->get();
+              
+        $data = DB::table('bookings')
+                    ->distinct()
+                    ->join('lapangans', function ($join) {
+                        $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                        $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
+                    })
+                    ->join('teams', function ($join) {
+                        $join->on('bookings.team_id', '=', 'teams.id');
+                    })
+                    ->select('bookings.*', 'lapangans.nama_lapangan', 'teams.nama_team')
+                    ->where('bookings.status', '=', 'SUCCESS' )
+                    ->where('bookings.pay', '=', $request->input("nominal") )
+                    ->get();
 
         $out = [
             "message" => "update transaction succesfuly ",
             "results"  => [
-                "orders" => $data,
+                "notifications" => $data,
             ]
         ];
 

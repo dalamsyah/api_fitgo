@@ -90,30 +90,122 @@ class MasterController extends Controller
 
     public function getMaster(Request $request){
 
-        if($request->input("q") == "notification"){
+        if($request->input("q") == "job_notification"){
+
+            $mytime = Carbon::now();
+            $date = $mytime->toDateTimeString();
+
+            /*
+            * 1 -> user
+            * 2 -> admin
+            */
+            if($request->input("user_type") > 1 ){
+
+                $out = [
+                    "message" => "get ".$request->input("q")." success",
+                    "results"  => [
+                        "notifications" => DB::table('bookings')
+                                            ->distinct()
+                                            ->join('lapangans', function ($join) {
+                                                $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                                                $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
+                                            })
+                                            ->join('teams', function ($join) {
+                                                $join->on('bookings.team_id', '=', 'teams.id');
+                                            })
+                                            ->select('bookings.*', 'lapangans.nama_lapangan', 'teams.nama_team')
+                                            ->where('bookings.status', '=', 'SUCCESS' )
+                                            // ->where('bookings.created_at', '>', $request->input("created_at") ) //utk job
+                                            ->where('lapangans.owner_email', '=', $request->input("user_email") )
+                                            ->where('bookings.id', '>', $request->input("lastIdNotification") )
+                                            ->get()
+                    ]
+                ];
+                
+            }else{
+
+                $out = [
+                    "timenow" => $date,
+                    "message" => "get ".$request->input("q")." success",
+                    "results"  => [
+                        "notifications" => DB::table('bookings')
+                                            ->distinct()
+                                            ->join('lapangans', function ($join) {
+                                                $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                                                $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
+                                            })
+                                            ->join('teams', function ($join) {
+                                                $join->on('bookings.team_id', '=', 'teams.id');
+                                            })
+                                            ->select('bookings.*', 'lapangans.nama_lapangan', 'teams.nama_team')
+                                            ->where('bookings.status', '=', 'SUCCESS' )
+                                            ->where('bookings.email', '=', $request->input("user_email") )
+                                            // ->where('bookings.created_at', '>', $date ) //utk job
+                                            ->where('bookings.id', '>', $request->input("lastIdNotification") )
+                                            ->get()
+                    ]
+                ];
+            }
+
+            return response()->json($out, 200);
+
+        }else if($request->input("q") == "notification"){
 
             Log::debug($request);
 
-            $out = [
-                "message" => "get ".$request->input("q")." success",
-                "results"  => [
-                    "notifications" => DB::table('bookings')
-                                        ->distinct()
-                                        ->join('lapangans', function ($join) {
-                                            $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
-                                            $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
-                                        })
-                                        ->join('teams', function ($join) {
-                                            $join->on('bookings.team_id', '=', 'teams.id');
-                                        })
-                                        ->select('bookings.*', 'lapangans.nama_lapangan', 'teams.nama_team')
-                                        ->where('bookings.status', '=', 'SUCCESS' )
-                                        ->where('lapangans.owner_email', '=', $request->input("user_email") )
-                                        // ->where('bookings.id', '>', $request->input("lastIdNotification") )
-                                        ->get()
-                ]
-            ];
 
+            /*
+            * 1 -> user
+            * 2 -> admin
+            */
+            if($request->input("user_type") > 1 ){
+
+                $out = [
+                    "message" => "get ".$request->input("q")." success",
+                    "results"  => [
+                        "notifications" => DB::table('bookings')
+                                            ->distinct()
+                                            ->join('lapangans', function ($join) {
+                                                $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                                                $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
+                                            })
+                                            ->join('teams', function ($join) {
+                                                $join->on('bookings.team_id', '=', 'teams.id');
+                                            })
+                                            ->select('bookings.*', 'lapangans.nama_lapangan', 'teams.nama_team')
+                                            ->where('bookings.status', '=', 'SUCCESS' )
+                                            ->where('lapangans.owner_email', '=', $request->input("user_email") )
+                                            ->where('bookings.id', '>', $request->input("lastIdNotification") )
+                                            ->get()
+                    ]
+                ];
+                
+            }else{
+
+                $mytime = Carbon::now();
+                $date = $mytime->toDateTimeString();
+
+                $out = [
+                    "timenow" => $date,
+                    "message" => "get ".$request->input("q")." success",
+                    "results"  => [
+                        "notifications" => DB::table('bookings')
+                                            ->distinct()
+                                            ->join('lapangans', function ($join) {
+                                                $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                                                $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
+                                            })
+                                            ->join('teams', function ($join) {
+                                                $join->on('bookings.team_id', '=', 'teams.id');
+                                            })
+                                            ->select('bookings.*', 'lapangans.nama_lapangan', 'teams.nama_team')
+                                            ->where('bookings.status', '=', 'SUCCESS' )
+                                            ->where('bookings.email', '=', $request->input("user_email") )
+                                            ->where('bookings.id', '>', $request->input("lastIdNotification") )
+                                            ->get()
+                    ]
+                ];
+            }
 
             return response()->json($out, 200);
 
