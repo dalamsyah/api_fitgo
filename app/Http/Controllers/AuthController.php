@@ -82,6 +82,24 @@ class AuthController extends Controller
                                 ->where('lapangans.owner_email', '=', $user->email )
                                 ->where('bookings.id', '>', 0 )
                                 ->get();
+
+                $invoice = DB::table('bookings')
+                                ->distinct()
+                                ->join('lapangans', function ($join) {
+                                    $join->on('bookings.kode_lapangan', '=', 'lapangans.kode_lapangan');
+                                    $join->on('bookings.kode_sublapangan', '=', 'lapangans.kode_sublapangan');
+                                })
+                                ->join('teams', function ($join) {
+                                    $join->on('bookings.team_id', '=', 'teams.id');
+                                })
+                                ->select('bookings.*','lapangans.nama_lapangan', 'teams.nama_team',
+                                        DB::raw('(bookings.dp / bookings.harga) as dpText')
+                                    )
+                                ->where('bookings.status', '=', 'SUCCESS' )
+                                ->where('lapangans.owner_email', '=', $user->email )
+                                ->where('bookings.id', '>', 0 )
+                                ->get();
+
             }else{
                 $notif = DB::table('bookings')
                                 ->join('lapangans', function ($join) {
@@ -96,6 +114,8 @@ class AuthController extends Controller
                                          DB::raw('CONCAT(lapangans.nama_tempat,", ",lapangans.lokasi) as alamat') )
                                 ->where('bookings.email', $user->email)
                                 ->get();
+
+                $invoice = null;
             }
  
             $out = [
@@ -118,6 +138,7 @@ class AuthController extends Controller
                                 ->get(),
 
                     "notifications" => $notif,
+                    "invoices" => $invoice,
 
                     "teams" => DB::table('teams')
                                 ->where('deleted', 'false')

@@ -18,13 +18,29 @@ class UserSeeder extends Seeder
 
     	$users = [
     		[
+                "email" => "dimasalamsyah07@gmail.com",
+                "username" => "super",
+                "password" => Hash::make("123456"),
+                "token" => "",
+                "type" => 3,
+                "verifikasi" => "true"
+            ],
+            [
     			"email" => "dimasalamsyah0712@gmail.com",
-    			"username" => "admin",
+    			"username" => "java",
     			"password" => Hash::make("123456"),
     			"token" => "",
                 "type" => 2,
                 "verifikasi" => "true"
     		],
+            [
+                "email" => "samsungaxa12@gmail.com",
+                "username" => "sis",
+                "password" => Hash::make("123456"),
+                "token" => "",
+                "type" => 2,
+                "verifikasi" => "true"
+            ],
     		[
     			"email" => "dani@gmail.com",
     			"username" => "dani",

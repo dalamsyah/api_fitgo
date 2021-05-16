@@ -29,6 +29,10 @@ $router->get("/users", "AuthController@index");
 $router->post("/team", "TeamController@save");
 $router->delete("/team/{id}", "TeamController@delete");
 
+//invoice
+$router->get("/invoice", "MasterController@getInvoice");
+$router->get("/invoice/{orderId}", "MasterController@getInvoiceDetail");
+
 //master
 $router->get("/master", "MasterController@getMaster");
 $router->get("/tes", "MasterController@tes");
